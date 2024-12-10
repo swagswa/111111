@@ -1,0 +1,702 @@
+.matrix-game {
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    color: white;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Статичная сетка */
+  .matrix-game::before {
+    content: '';
+    position: absolute;
+    top: -150%;
+    left: -50%;
+    right: -50%;
+    bottom: -150%;
+    background-image: 
+        linear-gradient(90deg, rgba(0, 255, 157, 0.03) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(0, 255, 157, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: moveGrid 20s linear infinite;
+    z-index: 0;
+    box-shadow: 0 0 50px rgba(0, 255, 157, 0.1) inset;
+  }
+  
+  /* Затемнение по краям */
+  .matrix-game::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+    z-index: 0;
+  }
+  
+  /* Базовые стили ячейки */
+  .matrix-cell {
+    border: 2px solid rgba(51, 51, 51, 0.8);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+  
+  /* Стили актйой ячейки с анимацией появления */
+  .matrix-grid .matrix-row .matrix-cell.active {
+    background: rgba(0, 255, 157, 0.15) !important;
+    border-color: #00ff9d !important;
+    box-shadow: 
+      0 0 20px rgba(0, 255, 157, 0.3),
+      0 0 40px rgba(0, 255, 157, 0.2),
+      0 0 60px rgba(0, 255, 157, 0.1) !important;
+    animation: 
+      cellActivate 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+      cellGlow 1.5s ease-in-out infinite alternate;
+    z-index: 2;
+  }
+  
+  /* Анимация активации ячейки */
+  @keyframes cellActivate {
+    0% {
+      transform: scale(0.3);
+      background: rgba(0, 255, 157, 0.5);
+      box-shadow: 0 0 100px rgba(0, 255, 157, 0.8);
+    }
+    50% {
+      transform: scale(1.1);
+      background: rgba(0, 255, 157, 0.3);
+    }
+    100% {
+      transform: scale(1);
+      background: rgba(0, 255, 157, 0.15);
+    }
+  }
+  
+  /* Улучшенная анимация свечения */
+  @keyframes cellGlow {
+    0% {
+      box-shadow: 
+        0 0 20px rgba(0, 255, 157, 0.3),
+        0 0 40px rgba(0, 255, 157, 0.2);
+      border-color: rgba(0, 255, 157, 0.8);
+    }
+    50% {
+      box-shadow: 
+        0 0 30px rgba(0, 255, 157, 0.4),
+        0 0 50px rgba(0, 255, 157, 0.3),
+        0 0 70px rgba(0, 255, 157, 0.2);
+      border-color: rgba(0, 255, 157, 1);
+    }
+    100% {
+      box-shadow: 
+        0 0 20px rgba(0, 255, 157, 0.3),
+        0 0 40px rgba(0, 255, 157, 0.2);
+      border-color: rgba(0, 255, 157, 0.8);
+    }
+  }
+  
+  /* Добавляем эффект олн при актиации */
+  .matrix-cell.active::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(0, 255, 157, 0.4) 0%, transparent 60%);
+    transform: translate(-50%, -50%) scale(0);
+    animation: rippleEffect 1s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  @keyframes rippleEffect {
+    0% {
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0;
+    }
+  }
+  
+  /* Добавляем эффект вспышки при активации */
+  .matrix-cell.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 255, 157, 0.4);
+    animation: flashEffect 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+  
+  @keyframes flashEffect {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  
+  /* Добавляем задержку для последовательной анимации */
+  .matrix-row {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+  }
+  
+  .matrix-row .matrix-cell.active {
+    animation-delay: calc(var(--row-index) * 0.1s);
+  }
+  
+  /* Эффект пи наведении */
+  .matrix-cell:hover {
+    border-color: rgba(0, 255, 157, 0.3);
+  }
+  
+  .size-selector {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 20px;
+    padding: 0 20px;
+    perspective: 1000px;
+  }
+  
+  .size-dropdown {
+    width: 100%;
+    max-width: 400px;
+    padding: 16px 24px;
+    border-radius: 15px;
+    background: rgba(26, 26, 26, 0.95);
+    color: #00ff9d;
+    border: 2px solid rgba(0, 255, 157, 0.2);
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+    backdrop-filter: blur(10px);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300FF9D%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 20px top 50%;
+    background-size: 12px auto;
+    padding-right: 40px;
+    transform-style: preserve-3d;
+    transform-origin: 50% 0%;
+  }
+  
+  .size-dropdown:hover:not(:disabled) {
+    border-color: rgba(0, 255, 157, 0.4);
+    box-shadow: 0 0 30px rgba(0, 255, 157, 0.15);
+    transform: translateY(-2px) translateZ(0);
+  }
+  
+  .size-dropdown:focus {
+    outline: none;
+    border-color: rgba(0, 255, 157, 0.6);
+    box-shadow: 0 0 30px rgba(0, 255, 157, 0.2);
+    transform: translateY(0) translateZ(0);
+  }
+  
+  /* Стилизация выпадающего списка */
+  .size-dropdown option {
+    background: rgba(26, 26, 26, 0.95);
+    color: #00ff9d;
+    padding: 12px;
+    font-weight: 500;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+  
+  .size-dropdown:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: rgba(0, 255, 157, 0.1);
+    box-shadow: none;
+    transform: none;
+  }
+  
+  /* Анимация стрелки */
+  .size-dropdown {
+    background-position-y: 50%;
+    transition: 
+        all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1),
+        background-position-y 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+        transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+  
+  .size-dropdown:focus {
+    background-position-y: 55%;
+  }
+  
+  .matrix-grid-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: calc(100vh - 320px);
+    min-height: 200px;
+    overflow: hidden;
+    margin-bottom: -30px;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .matrix-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 2;
+  }
+  
+  .matrix-row {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+  }
+  
+  .game-controls {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+    height: auto;
+  }
+  
+  .control-button {
+    background: linear-gradient(45deg, #00ff9d, #00cc7d);
+    border: none;
+    color: white;
+    padding: 15px 50px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(0, 255, 157, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    min-width: 200px;
+  }
+  
+  /* Эффект волны при нажатии */
+  .control-button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.5s ease-out, opacity 0.3s ease-out;
+  }
+  
+  .control-button:active::after {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    transition: 0s;
+  }
+  
+  .control-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 255, 157, 0.25);
+  }
+  
+  .control-button:active {
+    transform: scale(0.97) translateY(3px);
+    box-shadow: 0 2px 10px rgba(0, 255, 157, 0.15);
+  }
+  
+  /* Стили для кнопки Play */
+  .control-button.play {
+    background: linear-gradient(45deg, #00ff9d, #00cc7d);
+    color: #1a1a1a;
+    font-weight: 700;
+    box-shadow: 
+        0 4px 15px rgba(0, 255, 157, 0.15),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+  
+  .control-button.play:hover {
+    background: linear-gradient(45deg, #00ff9d, #00e68a);
+    box-shadow: 
+        0 8px 25px rgba(0, 255, 157, 0.25),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  }
+  
+  .control-button.play:active {
+    background: linear-gradient(45deg, #00e68a, #00ff9d);
+  }
+  
+  /* Стили для кнопки Reset */
+  .control-button.reset {
+    background: linear-gradient(45deg, #444, #333);
+    color: #00ff9d;
+    box-shadow: none;
+    border: 2px solid rgba(0, 255, 157, 0.1);
+  }
+  
+  .control-button.reset:hover {
+    background: linear-gradient(45deg, #4a4a4a, #383838);
+    box-shadow: none;
+    border-color: rgba(0, 255, 157, 0.2);
+  }
+  
+  .control-button.reset:active {
+    background: linear-gradient(45deg, #383838, #4a4a4a);
+    transform: scale(0.98);
+  }
+  
+  /* Стили для кнопки Back */
+  .control-button.back {
+    background: linear-gradient(45deg, #2a2a2a, #1a1a1a);
+    color: #00ff9d;
+    box-shadow: none;
+    border: 2px solid rgba(0, 255, 157, 0.1);
+  }
+  
+  .control-button.back:hover {
+    background: linear-gradient(45deg, #303030, #202020);
+    box-shadow: none;
+    border-color: rgba(0, 255, 157, 0.2);
+  }
+  
+  .control-button.back:active {
+    transform: scale(0.98);
+  }
+  
+  /* Стили для отключенной кнопки */
+  .control-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    background: rgba(26, 26, 26, 0.9);
+    color: rgba(255, 255, 255, 0.5);
+    box-shadow: none;
+  }
+  
+  .control-button:disabled::before,
+  .control-button:disabled::after {
+    display: none;
+  }
+  
+  /* Анмация пульсации дя кнопки Play */
+  @keyframes playButtonPulse {
+    0% {
+      box-shadow: 0 0 20px rgba(0, 255, 157, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 30px rgba(0, 255, 157, 0.5);
+    }
+    100% {
+      box-shadow: 0 0 20px rgba(0, 255, 157, 0.3);
+    }
+  }
+  
+  .control-button.play:not(:disabled) {
+    animation: playButtonPulse 2s infinite;
+  }
+  
+  @keyframes glow {
+    from {
+      box-shadow: 0 0 10px rgba(0, 255, 157, 0.3);
+    }
+    to {
+      box-shadow: 0 0 20px rgba(0, 255, 157, 0.5);
+    }
+  }
+  
+  @keyframes pulse {
+    0% {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 0.5;
+    }
+    100% {
+      opacity: 0.3;
+    }
+  } 
+  
+  /* Движущаяся сетка */
+  .matrix-game::before {
+    content: '';
+    position: absolute;
+    top: -150%;
+    left: -50%;
+    right: -50%;
+    bottom: -150%;
+    background-image: 
+        linear-gradient(90deg, rgba(0, 255, 157, 0.03) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(0, 255, 157, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: moveGrid 20s linear infinite;
+    z-index: 0;
+    box-shadow: 0 0 50px rgba(0, 255, 157, 0.1) inset;
+  }
+  
+  @keyframes moveGrid {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(33.33%);
+    }
+  }
+  
+  /* Светящиеся частицы */
+  .matrix-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+  
+  .matrix-particles::before,
+  .matrix-particles::after,
+  .matrix-particles span {
+    content: '';
+    position: absolute;
+    background: rgba(0, 255, 157, 0.6);
+    border-radius: 50%;
+    box-shadow: 
+        0 0 15px rgba(0, 255, 157, 0.8),
+        0 0 30px rgba(0, 255, 157, 0.6),
+        0 0 45px rgba(0, 255, 157, 0.4);
+  }
+  
+  .matrix-particles::before {
+    width: 4px;
+    height: 4px;
+    top: 20%;
+    left: 20%;
+    animation: floatParticle1 20s ease-in-out infinite;
+  }
+  
+  .matrix-particles::after {
+    width: 6px;
+    height: 6px;
+    top: 70%;
+    left: 70%;
+    animation: floatParticle2 25s ease-in-out infinite;
+  }
+  
+  .matrix-particles span:nth-child(1) {
+    width: 3px;
+    height: 3px;
+    top: 40%;
+    left: 30%;
+    animation: floatParticle3 22s ease-in-out infinite;
+  }
+  
+  .matrix-particles span:nth-child(2) {
+    width: 5px;
+    height: 5px;
+    top: 60%;
+    left: 40%;
+    animation: floatParticle4 28s ease-in-out infinite;
+  }
+  
+  .matrix-particles span:nth-child(3) {
+    width: 4px;
+    height: 4px;
+    top: 30%;
+    left: 60%;
+    animation: floatParticle5 24s ease-in-out infinite;
+  }
+  
+  @keyframes floatParticle1 {
+    0%, 100% {
+        transform: translate(0, 0);
+        opacity: 0.3;
+    }
+    25% {
+        transform: translate(100px, -150px);
+        opacity: 0.8;
+    }
+    50% {
+        transform: translate(200px, 0);
+        opacity: 0.3;
+    }
+    75% {
+        transform: translate(100px, 150px);
+        opacity: 0.8;
+    }
+  }
+  
+  @keyframes floatParticle2 {
+    0%, 100% {
+        transform: translate(0, 0);
+        opacity: 0.3;
+    }
+    25% {
+        transform: translate(-150px, -100px);
+        opacity: 0.8;
+    }
+    50% {
+        transform: translate(-200px, 0);
+        opacity: 0.3;
+    }
+    75% {
+        transform: translate(-150px, 100px);
+        opacity: 0.8;
+    }
+  }
+  
+  @keyframes floatParticle3 {
+    0%, 100% {
+        transform: translate(0, 0);
+        opacity: 0.3;
+    }
+    25% {
+        transform: translate(-120px, -80px);
+        opacity: 0.8;
+    }
+    50% {
+        transform: translate(-180px, 50px);
+        opacity: 0.3;
+    }
+    75% {
+        transform: translate(-60px, 120px);
+        opacity: 0.8;
+    }
+  }
+  
+  @keyframes floatParticle4 {
+    0%, 100% {
+        transform: translate(0, 0);
+        opacity: 0.3;
+    }
+    25% {
+        transform: translate(80px, -120px);
+        opacity: 0.8;
+    }
+    50% {
+        transform: translate(160px, -60px);
+        opacity: 0.3;
+    }
+    75% {
+        transform: translate(120px, 80px);
+        opacity: 0.8;
+    }
+  }
+  
+  @keyframes floatParticle5 {
+    0%, 100% {
+        transform: translate(0, 0);
+        opacity: 0.3;
+    }
+    25% {
+        transform: translate(-80px, -100px);
+        opacity: 0.8;
+    }
+    50% {
+        transform: translate(-140px, -40px);
+        opacity: 0.3;
+    }
+    75% {
+        transform: translate(-100px, 60px);
+        opacity: 0.8;
+    }
+  }
+  
+  /* Стили для кнопок управления ставкой */
+  .bet-button {
+    background: linear-gradient(45deg, #2a2a2a, #1a1a1a);
+    border: 2px solid rgba(0, 255, 157, 0.2);
+    color: #00ff9d;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 24px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .bet-button:hover {
+    border-color: rgba(0, 255, 157, 0.4);
+    background: linear-gradient(45deg, #303030, #202020);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 255, 157, 0.15);
+  }
+  
+  .bet-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 10px rgba(0, 255, 157, 0.1);
+  }
+  
+  /* Стили для отображения суммы ставки */
+  .bet-amount {
+    background: rgba(26, 26, 26, 0.95);
+    color: #00ff9d;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    min-width: 120px;
+    text-align: center;
+    border: 2px solid rgba(0, 255, 157, 0.2);
+  }
+  
+  /* Стили для множителя */
+  .bet-multiplier {
+    background: rgba(0, 255, 157, 0.1);
+    color: #00ff9d;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  
+  /* Контейнер для элементов управления ставкой */
+  .bet-input {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 10px 0;
+  }
+  
+  /* Отключаем анимацию пульсации для этих кнопок */
+  .control-button.reset:not(:disabled),
+  .control-button.back:not(:disabled) {
+    animation: none;
+  }
+  

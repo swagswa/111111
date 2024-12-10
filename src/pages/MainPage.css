@@ -1,0 +1,202 @@
+.root {
+  min-height: 100vh;
+  background: linear-gradient(135deg, rgba(255, 0, 0, 0.5), rgba(255, 127, 0, 0.5), rgba(0, 0, 255, 0.5), rgba(75, 0, 130, 0.5), rgba(148, 0, 211, 0.5));
+  background-size: 400% 400%;
+  animation: gradientAnimation 15s ease infinite;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+}
+
+.root::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+  opacity: 0.2;
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.logo {
+  width: 300px;
+  margin-bottom: 20px; /* Отступ снизу для логотипа */
+  position: relative;
+  overflow: hidden;
+}
+
+.logo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 10px;
+  background: rgba(0, 255, 157, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.logo:hover::before {
+  opacity: 1;
+}
+
+@keyframes glow {
+  0% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 10px;
+  margin-top: 70px; /* Увеличьте отступ сверху для контейнера */
+}
+
+.main {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px; /* Отступы между карточками */
+  padding: 10px;
+}
+
+.game-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: slideIn 0.5s ease forwards; /* Анимация появления карточек */
+}
+
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px); /* Начальная позиция ниже */
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0); /* Конечная позиция */
+  }
+}
+
+.game-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+
+.game-title {
+  color: white;
+  font-size: 18px;
+  margin: 8px 0;
+}
+
+.open-button {
+  background: rgba(255, 255, 255, 0.1); /* Полупрозрачный матовый фон */
+  border: 2px solid rgba(255, 255, 255, 0.3); /* Полупрозрачная граница */
+  border-radius: 25px;
+  padding: 10px 40px;
+  font-size: 16px;
+  color: white;
+  cursor: pointer;
+  margin-top: 5px;
+  width: 80%;
+  backdrop-filter: blur(10px); /* Эффект размытия фона */
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Плавный переход */
+}
+
+/* Эффект нажатия */
+.open-button:active {
+  transform: scale(0.95); /* Уменьшение размера при нажатии */
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); /* Эффект свечения */
+}
+
+/* Базовое свечение при наведении */
+.open-button:hover {
+  background: rgba(255, 255, 255, 0.2); /* Увеличение прозрачности при наведении */
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); /* Эффект свечения */
+}
+
+/* Анимация нажатия */
+.open-button:active {
+  animation: buttonPress 0.2s ease; /* Анимация нажатия */
+}
+
+@keyframes buttonPress {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95); /* Уменьшение размера */
+  }
+  100% {
+    transform: scale(1); /* Возврат к исходному размеру */
+  }
+}
+
+/* Добавляем эффект свечения для карточек */
+.game-card {
+  position: relative;
+}
+
+.game-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 20px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+}
+
+/* Медиа-зпрос для мобильных устройств */
+@media screen and (max-width: 430px) {
+  .main {
+    gap: 15px;
+    padding: 5px;
+  }
+  
+  .game-card img {
+    border-radius: 15px;
+  }
+  
+  .game-title {
+    font-size: 16px;
+  }
+  
+  .open-button {
+    padding: 8px 30px;
+    font-size: 14px;
+  }
+}

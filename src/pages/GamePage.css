@@ -1,0 +1,1322 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700&display=swap');
+
+:root {
+  --scale: 1;
+  --container-width: 430px;
+  --base-padding: 16px;
+  --border-radius: 12px;
+  --font-size-small: 14px;
+  --font-size-medium: 16px;
+  --font-size-large: 24px;
+  --wave-size: 100%;
+  --float-distance: 10px;
+  --glow-radius: 15px;
+  --border-width: 2px;
+}
+
+/* Отключаем скролл для всей страницы */
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100%;
+}
+
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Добавляем эффект глубины */
+.game-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(16, 42, 110, 0.1) 0%,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(16, 42, 110, 0.1) 0%,
+      transparent 40%
+    );
+  pointer-events: none;
+}
+
+/* Добавляем виньетирование */
+.game-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at center,
+    transparent 0%,
+    rgba(2, 4, 18, 0.4) 100%
+  );
+  pointer-events: none;
+}
+
+/* Обеспечиваем, чтобы контент был поверх фона */
+.grid, .mines-control, .signal-button, .back-button {
+  position: relative;
+  z-index: 1;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  background: rgba(13, 25, 42, 0.8);
+  padding: 15px;
+  border-radius: 10px;
+  margin: 20px 0;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
+  z-index: 1;
+}
+
+.grid-item {
+  width: 50px;
+  height: 50px;
+  background: rgba(56, 189, 248, 0.1);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  transition: all 0.3s ease;
+}
+
+.grid-item:hover {
+  background: rgba(56, 189, 248, 0.15);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+}
+
+.star {
+  font-size: 24px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  color: #FFD700;
+  text-shadow: 
+    0 0 10px rgba(255, 215, 0, 0.5),
+    0 0 20px rgba(255, 215, 0, 0.3);
+  animation: starAppear 0.4s ease forwards;
+}
+
+@keyframes starAppear {
+  0% {
+    transform: translate(-50%, -50%) scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  60% {
+    transform: translate(-50%, -50%) scale(1.2) rotate(20deg);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* Удаляем задержки анимации, так как теперь используем setTimeout */
+.star {
+  animation: 
+    starAppear 0.4s ease forwards,
+    starGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes starGlow {
+  from {
+    text-shadow: 
+      0 0 10px rgba(255, 215, 0, 0.5),
+      0 0 20px rgba(255, 215, 0, 0.3);
+  }
+  to {
+    text-shadow: 
+      0 0 15px rgba(255, 215, 0, 0.7),
+      0 0 25px rgba(255, 215, 0, 0.5);
+  }
+}
+
+.signal-button {
+  background: linear-gradient(45deg, #28a745, #34ce57);
+  border: none;
+  color: white;
+  padding: 15px 40px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-top: 20px;
+  z-index: 1;
+  letter-spacing: 2px;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+  transition: all 0.3s ease;
+  font-family: 'Exo 2', sans-serif;
+  filter: drop-shadow(0 0 10px rgba(0, 255, 157, 0.5));
+}
+
+.signal-button:hover {
+  background: linear-gradient(45deg, #218838, #28a745);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+.signal-button:active {
+  transform: translateY(2px);
+  filter: drop-shadow(0 0 5px rgba(0, 255, 157, 0.7));
+  transition: transform 0.1s ease;
+}
+
+.signal-button:disabled {
+  background: rgba(40, 167, 69, 0.5);
+  cursor: not-allowed;
+  box-shadow: none;
+  filter: none;
+}
+
+.back-button {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  padding: 10px 20px;
+  background: rgba(22, 22, 22, 0.95);
+  border: 2px solid rgba(255, 215, 0, 0.4);
+  border-radius: 8px;
+  color: #FFD700;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Exo 2', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 
+    inset 0 0 10px rgba(255, 215, 0, 0.2),
+    0 0 8px rgba(255, 215, 0, 0.3);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+}
+
+.back-button:hover {
+  border-color: #FFD700;
+  box-shadow: 
+    inset 0 0 15px rgba(255, 215, 0, 0.3),
+    0 0 15px rgba(255, 215, 0, 0.4);
+  transform: translateX(-2px);
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.back-button:active {
+  transform: translateX(1px);
+  box-shadow: 
+    inset 0 0 10px rgba(255, 215, 0, 0.2),
+    0 0 8px rgba(255, 215, 0, 0.2);
+}
+
+@keyframes stars {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; opacity: 0.9; }
+  50% { background-position: 100% 50%; opacity: 1; }
+  100% { background-position: 0% 50%; opacity: 0.9; }
+}
+
+@keyframes wave {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(calc(var(--float-distance) * -1)); }
+  100% { transform: translateY(0); }
+}
+
+.logo {
+  position: absolute;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: auto;
+  z-index: 2;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+}
+
+.center-image {
+  width: 80%;
+  max-width: 300px;
+  height: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: float 3s ease-in-out infinite;
+}
+
+.number-box {
+  font-size: var(--font-size-large);
+  color: #ff3333;
+  text-shadow: 0 0 var(--glow-radius) rgba(255, 51, 51, 0.7);
+  position: absolute;
+  top: 65%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.analyze-button {
+  position: absolute;
+  bottom: calc(var(--base-padding) * 2);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--base-padding) calc(var(--base-padding) * 2);
+  font-size: var(--font-size-medium);
+  border: calc(var(--border-width)) solid #ff3333;
+  border-radius: var(--border-radius);
+  background: transparent;
+  color: #ff3333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+@media screen and (max-width: 430px) {
+  .game-container {
+    width: 100%;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 50px);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.grid-item {
+  width: 50px;
+  height: 50px;
+  background-color: #007bff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+}
+
+.star {
+  color: orange;
+  font-size: 24px;
+}
+
+.signal-button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.game-container {
+  background-color: #000;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+}
+
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  background: #1a1a1a;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 20px 0;
+}
+
+.grid-item {
+  width: 50px;
+  height: 50px;
+  background: #2c2c2c;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.star {
+  font-size: 24px;
+  color: #ffd700;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  line-height: 0;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.control-button {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;  /* Деаем кнопки круглыми */
+  border: 2px solid rgba(0, 255, 157, 0.3);
+  background: linear-gradient(145deg, rgba(0, 255, 157, 0.15), rgba(0, 255, 157, 0.05));
+  color: #00ff9d;
+  font-size: 28px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    inset 0 0 15px rgba(0, 255, 157, 0.1),
+    0 0 15px rgba(0, 255, 157, 0.2);
+  text-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
+}
+
+/* Эффект при наведении */
+.control-button:hover:not(:disabled) {
+  background: linear-gradient(145deg, rgba(0, 255, 157, 0.25), rgba(0, 255, 157, 0.15));
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 
+    inset 0 0 20px rgba(0, 255, 157, 0.2),
+    0 0 20px rgba(0, 255, 157, 0.4);
+}
+
+/* Эффект при нажатии */
+.control-button:active:not(:disabled) {
+  transform: translateY(1px) scale(0.95);
+  box-shadow: 
+    inset 0 0 10px rgba(0, 255, 157, 0.1),
+    0 0 10px rgba(0, 255, 157, 0.2);
+}
+
+/* Стили для отключенной кнопки */
+.control-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(0, 255, 157, 0.05);
+  border-color: rgba(0, 255, 157, 0.1);
+  box-shadow: none;
+}
+
+/* Анимация пульсации для кнопок */
+@keyframes buttonPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 255, 157, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 255, 157, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 255, 157, 0);
+  }
+}
+
+.control-button:not(:disabled) {
+  animation: buttonPulse 2s infinite;
+}
+
+.mines-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(26, 26, 46, 0.9);
+  border-radius: 10px;
+  padding: 5px 10px;
+  margin: 20px 0;
+  z-index: 1;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.mines-display {
+  font-size: 24px;
+  color: #fff;
+  font-weight: 700;
+  margin: 0 20px;
+  min-width: 50px;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes shootingStar {
+  0% {
+    transform: translateX(0) translateY(0) rotate(45deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(1000px) translateY(1000px) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+.shooting-star {
+  position: absolute;
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, white, transparent);
+  animation: shootingStar 2s linear infinite;
+  z-index: 0;
+}
+
+.shooting-star:nth-child(1) { top: 10%; left: -10%; animation-delay: 0s; }
+.shooting-star:nth-child(2) { top: 30%; left: -10%; animation-delay: 1s; }
+.shooting-star:nth-child(3) { top: 50%; left: -10%; animation-delay: 1.5s; }
+
+@keyframes particlePulse {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.5); opacity: 0.7; }
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  animation: particlePulse 3s ease-in-out infinite;
+}
+
+@keyframes starMove {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes nebulaMove {
+  0% { transform: translate(-5%, -5%) rotate(0deg); }
+  100% { transform: translate(5%, 5%) rotate(5deg); }
+}
+
+.game-container::after {
+  content: '';
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(62, 184, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 82, 182, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(76, 0, 255, 0.1) 0%, transparent 50%);
+  animation: backgroundPulse 10s ease-in-out infinite alternate;
+}
+
+@keyframes backgroundPulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.1); }
+}
+
+.shooting-stars-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* Анимрванные звезды */
+.stars {
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: -50%;
+  left: -50%;
+  background: transparent;
+  background-image: 
+    radial-gradient(2px 2px at 20% 20%, #fff, transparent),
+    radial-gradient(2px 2px at 40% 40%, #fff, transparent),
+    radial-gradient(2px 2px at 60% 60%, #fff, transparent),
+    radial-gradient(2px 2px at 80% 80%, #fff, transparent);
+  background-size: 100px 100px;
+  animation: starTwinkle 5s infinite alternate;
+  z-index: 0;
+}
+
+/* Мягкий радиент */
+.gradient-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 100%);
+  z-index: 0;
+}
+
+/* Анимация мерцания звезд */
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes glowing {
+    0% {
+        box-shadow: 0 0 5px rgba(0, 255, 157, 0.5), 0 0 10px rgba(0, 255, 157, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(0, 255, 157, 1), 0 0 30px rgba(0, 255, 157, 0.7);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(0, 255, 157, 0.5), 0 0 10px rgba(0, 255, 157, 0.5);
+    }
+}
+
+@keyframes imageGlow {
+    0% {
+        filter: drop-shadow(0 0 5px rgba(0, 255, 157, 0.5));
+    }
+    50% {
+        filter: drop-shadow(0 0 20px rgba(0, 255, 157, 1));
+    }
+    100% {
+        filter: drop-shadow(0 0 5px rgba(0, 255, 157, 0.5));
+    }
+}
+
+.game-image {
+    animation: imageGlow 1.5s infinite; /* Применяем анимацию к изображению */
+}
+
+@keyframes rainbowGlow {
+    0% {
+        filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.5)); /* Уменьшаем радиус */
+    }
+    14.29% {
+        filter: drop-shadow(0 0 10px rgba(255, 127, 0, 0.5)); /* Уменьшам радиус */
+    }
+    28.57% {
+        filter: drop-shadow(0 0 10px rgba(255, 255, 0, 0.5)); /* Уменьшаем радиус */
+    }
+    42.86% {
+        filter: drop-shadow(0 0 10px rgba(0, 255, 0, 0.5)); /* Уменьшаем радиус */
+    }
+    57.14% {
+        filter: drop-shadow(0 0 10px rgba(0, 0, 255, 0.5)); /* Уменьшаем радиус */
+    }
+    71.43% {
+        filter: drop-shadow(0 0 10px rgba(75, 0, 130, 0.5)); /* Уменьшаем радиус */
+    }
+    85.71% {
+        filter: drop-shadow(0 0 10px rgba(148, 0, 211, 0.5)); /* Уменьшаем раиус */
+    }
+    100% {
+        filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.5)); /* Возвращаемся к красному */
+    }
+}
+
+.game-image {
+    width: 300px; /* Установите ширину изображения */
+    height: 150px; /* Установите высоту изображения */
+    margin-bottom: 40px;
+    margin-top: -70px;
+    animation: rainbowGlow 6s linear infinite; /* Увеличаем время анимации для плавности */
+}
+
+/* Стили для контейнера с кнопками управления минами */
+.mines-control {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: rgba(0, 255, 157, 0.05);
+  padding: 15px 25px;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 255, 157, 0.2);
+  margin: 20px 0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Стили для кнопок + и - */
+.control-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 2px solid rgba(0, 255, 157, 0.3);
+  background: rgba(0, 255, 157, 0.1);
+  color: #00ff9d;
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Эффект при наведении */
+.control-button:hover:not(:disabled) {
+  background: rgba(0, 255, 157, 0.2);
+  border-color: rgba(0, 255, 157, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 255, 157, 0.3);
+}
+
+/* Эффект при нажатии */
+.control-button:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 2px 8px rgba(0, 255, 157, 0.2);
+}
+
+/* Стили для отклюенной кнопки */
+.control-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(0, 255, 157, 0.05);
+  border-color: rgba(0, 255, 157, 0.1);
+}
+
+/* Стили для отображения количества мин */
+.mines-display {
+  min-width: 60px;
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+  color: #00ff9d;
+  text-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
+  font-family: 'Exo 2', sans-serif;
+}
+
+/* Эффект пульсации при изменении значения */
+@keyframes numberPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.mines-display.pulse {
+  animation: numberPulse 0.3s ease;
+}
+
+/* Эффект волны при клике на кнопку */
+.control-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(0, 255, 157, 0.4) 0%, transparent 60%);
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.control-button:active::after {
+  animation: buttonRipple 0.6s ease-out;
+}
+
+@keyframes buttonRipple {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+/* Стили для game6 */
+.game6-container {
+  background: linear-gradient(180deg, #0B1622 0%, #0F1C2E 100%);
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.game6-button {
+  font-family: 'Exo 2', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.game6-control-button {
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  border-radius: 12px;
+  background: rgba(22, 22, 22, 0.95);
+  border: 2px solid rgba(255, 215, 0, 0.4);
+  color: #FFD700;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 
+    inset 0 0 15px rgba(255, 215, 0, 0.2),
+    0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.game6-control-button:hover:not(:disabled) {
+  border-color: #FFD700;
+  box-shadow: 
+    inset 0 0 20px rgba(255, 215, 0, 0.3),
+    0 0 20px rgba(255, 215, 0, 0.5);
+  transform: translateY(-2px);
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.game6-signal-button {
+  padding: 12px 30px;
+  font-size: 16px;
+  width: auto;
+  max-width: 90%;
+  background: rgba(22, 22, 22, 0.95);
+  border: 2px solid rgba(255, 215, 0, 0.4);
+  border-radius: 12px;
+  color: #FFD700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 
+    inset 0 0 15px rgba(255, 215, 0, 0.2),
+    0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.game6-signal-button:hover:not(:disabled) {
+  border-color: #FFD700;
+  box-shadow: 
+    inset 0 0 20px rgba(255, 215, 0, 0.3),
+    0 0 25px rgba(255, 215, 0, 0.5);
+  transform: translateY(-2px);
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.game6-back-button {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+  padding: 8px 15px;
+  font-size: 14px;
+  background: rgba(22, 22, 22, 0.95);
+  border: 2px solid rgba(255, 215, 0, 0.4);
+  border-radius: 8px;
+  color: #FFD700;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 
+    inset 0 0 10px rgba(255, 215, 0, 0.2),
+    0 0 8px rgba(255, 215, 0, 0.3);
+}
+
+.game6-back-button:hover {
+  border-color: #FFD700;
+  box-shadow: 
+    inset 0 0 15px rgba(255, 215, 0, 0.3),
+    0 0 15px rgba(255, 215, 0, 0.4);
+  transform: translateX(-2px);
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.game6-mines-display {
+  min-width: 60px;
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+  color: #FFD700;
+  margin: 0 15px;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* Анимация пульсации для числа */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.game6-mines-display.pulse {
+  animation: pulse 0.3s ease;
+}
+
+/* Стили для отклюенных кнопок */
+.game6-control-button:disabled,
+.game6-signal-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: rgba(255, 215, 0, 0.2);
+  box-shadow: none;
+  transform: none;
+  background: rgba(22, 22, 22, 0.7);
+}
+
+/* Обновленный фон для game6 */
+.game6-container {
+  background: linear-gradient(180deg, #0B1622 0%, #0F1C2E 100%);
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Звездное небо */
+.game6-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, #FFD700, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 40px 70px, #FFD700, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 50px 160px, #FFD700, rgba(0,0,0,0)),
+    radial-gradient(3px 3px at 90px 40px, #FFD700, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 130px 80px, #FFD700, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 160px 120px, #FFD700, rgba(0,0,0,0));
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  animation: twinkle 4s ease-in-out infinite;
+  opacity: 0.3;
+}
+
+/* Космическая дымка */
+.game6-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+  animation: nebulaPulse 8s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+/* Анимация мерцания звезд */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+/* Анимация космической дымки */
+@keyframes nebulaPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+}
+
+/* Падающие звезды */
+.game6-shooting-star {
+  position: absolute;
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, #FFD700, transparent);
+  opacity: 0;
+  animation: shootingStar 2s linear infinite;
+}
+
+.game6-shooting-star:nth-child(1) {
+  top: 10%;
+  left: 0;
+  animation-delay: 0s;
+}
+
+.game6-shooting-star:nth-child(2) {
+  top: 30%;
+  left: 20%;
+  animation-delay: 1s;
+}
+
+.game6-shooting-star:nth-child(3) {
+  top: 50%;
+  left: -10%;
+  animation-delay: 1.5s;
+}
+
+@keyframes shootingStar {
+  0% {
+    transform: translateX(0) translateY(0) rotate(45deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(500px) translateY(500px) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+/* Базовые стили для всех размеров экрана */
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Адаптивные стили для элементов */
+.game-element {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  margin: 1rem 0;
+  /* Добавляем миним��льный размер, чтобы элементы не становились слишком маленькими */
+  min-width: 280px;
+}
+
+/* Медиа-запросы для разных размеров экрана */
+@media screen and (max-width: 768px) {
+  .game-container {
+    padding: 0.5rem;
+  }
+  
+  .game-element {
+    max-width: 100%;
+    /* Уменьшаем отступы на мобильных устройствах */
+    margin: 0.5rem 0;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  /* Дополнительные стили для очень маленьких экранов */
+  .game-element {
+    min-width: 200px;
+  }
+}
+
+/* Для предотвращения наезжания элементов */
+* {
+  box-sizing: border-box;
+}
+
+/* Для контроля размера изображений */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Общие стили для всех игровых страниц */
+.game-container, 
+.game1-container, 
+.game2-container, 
+.game3-container,
+.game4-container,
+.game5-container,
+.game6-container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Стили для частиц и фоновых эффектов */
+.shooting-star,
+.particle,
+.stars,
+.gradient-overlay,
+.matrix-particles,
+.game-container::before,
+.game-container::after {
+  position: fixed;
+  z-index: 0;
+}
+
+/* Общие стли для всех кнопок back (кроме game4) */
+.back-button,
+.game1-back-button,
+.game2-back-button,
+.game3-back-button,
+.game5-back-button {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  padding: 10px 20px;
+  background: rgba(22, 22, 22, 0.95);
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Exo 2', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+}
+
+/* LuckyJet (game1) - красная тема */
+.game1-back-button {
+  border: 2px solid rgba(255, 59, 59, 0.4);
+  color: #ff3b3b;
+  box-shadow: 
+    inset 0 0 10px rgba(255, 59, 59, 0.2),
+    0 0 8px rgba(255, 59, 59, 0.3);
+}
+
+.game1-back-button:hover {
+  border-color: #ff3b3b;
+  box-shadow: 
+    inset 0 0 15px rgba(255, 59, 59, 0.3),
+    0 0 15px rgba(255, 59, 59, 0.4);
+  transform: translateX(-2px);
+  background: rgba(255, 59, 59, 0.1);
+}
+
+/* SpaceX (game2) - золотая тема */
+.game2-back-button {
+  border: 2px solid rgba(255, 215, 0, 0.4);
+  color: #FFD700;
+  box-shadow: 
+    inset 0 0 10px rgba(255, 215, 0, 0.2),
+    0 0 8px rgba(255, 215, 0, 0.3);
+}
+
+.game2-back-button:hover {
+  border-color: #FFD700;
+  box-shadow: 
+    inset 0 0 15px rgba(255, 215, 0, 0.3),
+    0 0 15px rgba(255, 215, 0, 0.4);
+  transform: translateX(-2px);
+  background: rgba(255, 215, 0, 0.1);
+}
+
+/* JetX (game3) - синяя тема */
+.game3-back-button {
+  border: 2px solid rgba(0, 149, 255, 0.4);
+  color: #0095ff;
+  box-shadow: 
+    inset 0 0 10px rgba(0, 149, 255, 0.2),
+    0 0 8px rgba(0, 149, 255, 0.3);
+}
+
+.game3-back-button:hover {
+  border-color: #0095ff;
+  box-shadow: 
+    inset 0 0 15px rgba(0, 149, 255, 0.3),
+    0 0 15px rgba(0, 149, 255, 0.4);
+  transform: translateX(-2px);
+  background: rgba(0, 149, 255, 0.1);
+}
+
+/* Rocket Queen (game5) - фиолетовая тема */
+.game5-back-button {
+  border: 2px solid rgba(147, 51, 234, 0.4);
+  color: #9333ea;
+  box-shadow: 
+    inset 0 0 10px rgba(147, 51, 234, 0.2),
+    0 0 8px rgba(147, 51, 234, 0.3);
+}
+
+.game5-back-button:hover {
+  border-color: #9333ea;
+  box-shadow: 
+    inset 0 0 15px rgba(147, 51, 234, 0.3),
+    0 0 15px rgba(147, 51, 234, 0.4);
+  transform: translateX(-2px);
+  background: rgba(147, 51, 234, 0.1);
+}
+
+/* Общие эффекты при нажатии для всех кнопок */
+.game1-back-button:active,
+.game2-back-button:active,
+.game3-back-button:active,
+.game5-back-button:active {
+  transform: translateX(1px);
+}
+
+/* Медиа-запрос для мобильных устройств */
+@media screen and (max-width: 480px) {
+  .back-button,
+  .game1-back-button,
+  .game2-back-button,
+  .game3-back-button,
+  .game5-back-button {
+    top: 10px;
+    left: 10px;
+    padding: 8px 15px;
+    font-size: 14px;
+    min-width: 60px;
+  }
+}
+
+/* Стили для основного контента игр */
+.game-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Стили для фона главной страницы */
+.root {
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  background: linear-gradient(
+    45deg,
+    #0B1622,
+    #1a237e,
+    #311b92,
+    #4a148c,
+    #1a237e,
+    #0B1622
+  );
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+}
+
+/* Контейнер для частиц */
+.particles-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Звезды на фоне */
+.star-particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #fff;
+  border-radius: 50%;
+  animation: twinkle 4s infinite alternate;
+}
+
+/* Анимация для фона */
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Анимация мерцания звезд */
+@keyframes twinkle {
+  0%, 100% { 
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* Стили для логотипа */
+.logo {
+  position: absolute;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: auto;
+  z-index: 2;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+}
+
+/* Размещаем основной контент над частицами */
+.container {
+  position: relative;
+  z-index: 1;
+}
+
+.main {
+  position: relative;
+  z-index: 1;
+  padding-top: 80px;
+}
+
+/* Медиа-запрос для мобильных устройств */
+@media screen and (max-width: 480px) {
+  .logo {
+    top: 15px;
+    width: 120px;
+  }
+  
+  .main {
+    padding-top: 60px;
+  }
+}
+  

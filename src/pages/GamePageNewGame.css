@@ -1,0 +1,169 @@
+.game-image {
+  width: 10%;
+  max-width: 75px;
+  margin: 20px 0;
+  margin-left: 20px;
+  border-radius: 10px;
+  box-shadow: inset 0 0 15px rgba(0, 255, 157, 0.5);
+}
+
+.game-container {
+  max-width: 30px;
+  margin: 0 auto;
+  padding: 20px;
+} 
+
+.game-container .image1 {
+  width: 50px;
+  height: 50px;
+} 
+
+/* Общие стили для всех кнопок на game6 */
+.game6-button {
+  font-family: 'Exo 2', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Стили для кнопок + и - */
+.game6-control-button {
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  background: linear-gradient(145deg, rgba(22, 22, 22, 0.95), rgba(30, 30, 30, 0.95));
+  border: 2px solid rgba(0, 255, 157, 0.4);
+  color: #00ff9d;
+  font-size: 24px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 
+    inset 0 0 15px rgba(0, 255, 157, 0.2),
+    0 0 10px rgba(0, 255, 157, 0.3);
+}
+
+.game6-control-button:hover {
+  border-color: #00ff9d;
+  box-shadow: 
+    inset 0 0 20px rgba(0, 255, 157, 0.3),
+    0 0 20px rgba(0, 255, 157, 0.5);
+  transform: translateY(-2px);
+  background: linear-gradient(145deg, rgba(30, 30, 30, 0.95), rgba(22, 22, 22, 0.95));
+}
+
+/* Стили для кнопки GET SIGNAL */
+.game6-signal-button {
+  padding: 15px 40px;
+  background: linear-gradient(145deg, rgba(22, 22, 22, 0.95), rgba(30, 30, 30, 0.95));
+  border: 2px solid rgba(0, 255, 157, 0.4);
+  border-radius: 12px;
+  color: #00ff9d;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 
+    inset 0 0 15px rgba(0, 255, 157, 0.2),
+    0 0 10px rgba(0, 255, 157, 0.3);
+}
+
+.game6-signal-button:hover {
+  border-color: #00ff9d;
+  box-shadow: 
+    inset 0 0 20px rgba(0, 255, 157, 0.3),
+    0 0 25px rgba(0, 255, 157, 0.5);
+  transform: translateY(-2px);
+  background: linear-gradient(145deg, rgba(30, 30, 30, 0.95), rgba(22, 22, 22, 0.95));
+}
+
+/* Стили для отключенных кнопок */
+.game6-control-button:disabled,
+.game6-signal-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: rgba(0, 255, 157, 0.2);
+  box-shadow: none;
+  transform: none;
+  background: rgba(22, 22, 22, 0.7);
+}
+
+/* Стили для дисплея с числом */
+.game6-mines-display {
+  min-width: 60px;
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+  color: #00ff9d;
+  margin: 0 15px;
+  text-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
+}
+
+/* Анимация пульсации для числа */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.game6-mines-display.pulse {
+  animation: pulse 0.3s ease;
+}
+
+/* Анимация свечения для активных кнопок */
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 5px rgba(0, 255, 157, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(0, 255, 157, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(0, 255, 157, 0.3);
+  }
+}
+
+.game6-control-button:not(:disabled),
+.game6-signal-button:not(:disabled) {
+  animation: glow 2s infinite;
+}
+
+/* Стили для кнопки BACK */
+.game6-back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 10px 20px;
+  background: linear-gradient(145deg, rgba(22, 22, 22, 0.95), rgba(30, 30, 30, 0.95));
+  border: 2px solid rgba(0, 255, 157, 0.4);
+  border-radius: 8px;
+  color: #00ff9d;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 
+    inset 0 0 10px rgba(0, 255, 157, 0.2),
+    0 0 8px rgba(0, 255, 157, 0.3);
+}
+
+.game6-back-button:hover {
+  border-color: #00ff9d;
+  box-shadow: 
+    inset 0 0 15px rgba(0, 255, 157, 0.3),
+    0 0 15px rgba(0, 255, 157, 0.4);
+  transform: translateX(-2px);
+  background: linear-gradient(145deg, rgba(30, 30, 30, 0.95), rgba(22, 22, 22, 0.95));
+}
